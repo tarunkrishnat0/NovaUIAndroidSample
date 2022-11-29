@@ -30,3 +30,9 @@
 
 
 Assets/Scenes/** filter=lfs diff=lfs merge=lfs -text
+Assets/Prefabs/** filter=lfs diff=lfs merge=lfs -text
+Assets/Art/** filter=lfs diff=lfs merge=lfs -text
+Assets/Plugins/** filter=lfs diff=lfs merge=lfs -text
+
+# Nova
+Assets/Plugins/Nova/Resources/NovaSettings.asset !filter !diff !merge text
