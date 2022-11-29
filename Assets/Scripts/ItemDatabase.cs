@@ -56,7 +56,7 @@ namespace NovaSamples.Inventory
             for (int i = 0; i < count; i++)
             {
                 // Make about half of the slots empty
-                bool isEmpty = UnityEngine.Random.Range(0, 1f) > 0.5f;
+                bool isEmpty = false;// UnityEngine.Random.Range(0, 1f) > 0.5f;
 
                 if (isEmpty)
                 {

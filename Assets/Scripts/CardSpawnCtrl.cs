@@ -1,5 +1,6 @@
 using Nova;
 using NovaSamples.Inventory;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -7,17 +8,62 @@ using UnityEngine;
 public class CardSpawnCtrl : MonoBehaviour
 {
     [SerializeField] private ItemDatabase _inventoryDataBase = null;
-    [SerializeField] private GridView _grid = null;
+    [SerializeField] private GridView _clickableGrid = null;
+    [SerializeField] private GridView _nonClickableGrid = null;
+    [SerializeField] private UIBlock2D _clickableButton;
+    [SerializeField] private UIBlock2D _nonClickableButton;
 
-    private List<InventoryItem> _cardsInventory = null;
+    private List<InventoryItem> _clickableCardsInventory = null;
+    private List<InventoryItem> _nonClickableCardsInventory = null;
 
     // Start is called before the first frame update
     void Start()
     {
-        _cardsInventory = _inventoryDataBase.GetRandomItems(30);
-        _grid.AddDataBinder<InventoryItem, CardVisuals>(HandleBind);
-        _grid.AddGestureHandler<Gesture.OnClick, CardVisuals>(HandleClick);
-        _grid.SetDataSource(_cardsInventory);
+        _clickableCardsInventory = _inventoryDataBase.GetRandomItems(60);
+        _nonClickableCardsInventory = _inventoryDataBase.GetRandomItems(60);
+
+        _clickableButton.Gradient.Enabled = false;
+        _nonClickableButton.Gradient.Enabled = true;
+
+        _clickableButton.AddGestureHandler<Gesture.OnClick>(HandleButtonPress);
+        _nonClickableButton.AddGestureHandler<Gesture.OnClick>(HandleButtonPress);
+
+        _clickableGrid.gameObject.SetActive(false);
+        _nonClickableGrid.gameObject.SetActive(true);
+
+        //_clickableGrid.AddDataBinder<InventoryItem, CardVisuals>(HandleBind);
+        //_clickableGrid.AddGestureHandler<Gesture.OnClick, CardVisuals>(HandleClick);
+        //_clickableGrid.SetDataSource(_clickableCardsInventory);
+
+        _nonClickableGrid.AddDataBinder<InventoryItem, CardVisuals>(HandleBind);
+        _nonClickableGrid.AddGestureHandler<Gesture.OnClick, CardVisuals>(HandleClick);
+        _nonClickableGrid.SetDataSource(_nonClickableCardsInventory);
+    }
+
+    private void HandleButtonPress(Gesture.OnClick evt)
+    {
+        Debug.Log("HandleButtonPress : " + evt.Receiver.gameObject.name);
+        if(evt.Receiver.gameObject.name == "Clickable")
+        {
+            _clickableButton.Gradient.Enabled = true;
+            _nonClickableButton.Gradient.Enabled = false;
+
+            _nonClickableGrid.gameObject.SetActive(false);
+            _clickableGrid.gameObject.SetActive(true);
+            if(_clickableGrid.DataSourceItemCount <= 0)
+            {
+                _clickableGrid.AddDataBinder<InventoryItem, CardVisuals>(HandleBind);
+                _clickableGrid.AddGestureHandler<Gesture.OnClick, CardVisuals>(HandleClick);
+                _clickableGrid.SetDataSource(_clickableCardsInventory);
+            }
+        } else
+        {
+            _clickableButton.Gradient.Enabled = false;
+            _nonClickableButton.Gradient.Enabled = true;
+
+            _clickableGrid.gameObject.SetActive(false);
+            _nonClickableGrid.gameObject.SetActive(true);
+        }
     }
 
     private void HandleBind(Data.OnBind<InventoryItem> evt, CardVisuals target, int index) => target.Bind(evt.UserData);
